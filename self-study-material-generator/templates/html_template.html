@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>__TITLE__</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['\\[','\\]']],
+    processEscapes: true,
+    tags: 'none',
+    macros: {
+      R: "\\mathbb{R}",
+      bbE: "\\mathbb{E}",
+      bbP: "\\mathbb{P}",
+      bbQ: "\\mathbb{Q}",
+      cF: "\\mathcal{F}",
+      cL: "\\mathcal{L}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      sgn: "\\operatorname{sgn}"
+    }
+  },
+  svg: { fontCache: 'global' },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre','code']
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root {
+  --bg: #fefcf8;
+  --bg-code: #f4f1ea;
+  --text: #1a1a1a;
+  --text-muted: #555;
+  --accent: #6b2c20;
+  --accent-light: #a64b3a;
+  --rule: #d4cfc4;
+  --link: #6b2c20;
+  --link-hover: #a64b3a;
+  --side: #fbf9f3;
+  --shadow: rgba(0,0,0,0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1815;
+    --bg-code: #252320;
+    --text: #e8e4dc;
+    --text-muted: #a8a39a;
+    --accent: #d99d8a;
+    --accent-light: #e8b8a8;
+    --rule: #3a3630;
+    --link: #d99d8a;
+    --link-hover: #e8b8a8;
+    --side: #221f1c;
+    --shadow: rgba(0,0,0,0.3);
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Source Serif 4", "Charter", "Georgia", "Songti SC", "SimSun", serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text);
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4em 2em 6em 2em;
+}
+/* 顶部导航横幅是 fixed 定位、脱离文档流的，需要给 main 补出等量的
+   顶部空间，否则正文会被横幅盖住。只在横幅实际存在（有上一章/下一章/
+   目录参数）时才需要这段空间，用 :has() 检测其直接子元素来判断，
+   避免没有横幅的页面（如合并版整书页）平白多出一截空白。 */
+main:has(> .chapternav-banner) {
+  padding-top: 8.5em;
+}
+@media (max-width: 600px) {
+  body { font-size: 16px; }
+  main { padding: 2em 1.2em 4em 1.2em; }
+  main:has(> .chapternav-banner) { padding-top: 8em; }
+}
+h1, h2, h3, h4 {
+  font-family: "Source Serif 4", "Charter", "Georgia", "Songti SC", serif;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+  margin-top: 2em;
+  margin-bottom: 0.8em;
+}
+h1 {
+  font-size: 2.1em;
+  text-align: center;
+  margin-top: 0.5em;
+  margin-bottom: 0.3em;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.6em;
+}
+h2 {
+  font-size: 1.55em;
+  margin-top: 2.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--rule);
+  color: var(--accent);
+}
+h3 {
+  font-size: 1.22em;
+  margin-top: 1.8em;
+  color: var(--text);
+}
+h4 {
+  font-size: 1.08em;
+  font-style: italic;
+  margin-top: 1.4em;
+}
+p {
+  margin: 0.8em 0;
+  text-align: justify;
+  hyphens: auto;
+}
+strong { color: var(--accent); font-weight: 600; }
+em { font-style: italic; }
+a { color: var(--link); text-decoration: none; border-bottom: 1px dotted var(--link); }
+a:hover { color: var(--link-hover); border-bottom-style: solid; }
+ul, ol { padding-left: 1.5em; }
+li { margin: 0.3em 0; }
+mjx-container[jax="SVG"][display="true"] {
+  margin: 1em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+mjx-container { color: var(--text); }
+code {
+  font-family: "JetBrains Mono", "Fira Code", "Consolas", "Menlo", monospace;
+  font-size: 0.88em;
+  background: var(--bg-code);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  color: var(--accent);
+}
+pre {
+  background: var(--bg-code);
+  padding: 1.1em 1.3em;
+  border-radius: 5px;
+  overflow-x: auto;
+  border-left: 3px solid var(--accent-light);
+  margin: 1.2em 0;
+  box-shadow: 0 1px 2px var(--shadow);
+}
+pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+  font-size: 0.85em;
+  line-height: 1.55;
+}
+blockquote {
+  border-left: 3px solid var(--accent-light);
+  background: var(--side);
+  margin: 1.2em 0;
+  padding: 0.6em 1.2em;
+  color: var(--text-muted);
+  font-style: italic;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+}
+th, td {
+  padding: 0.6em 0.9em;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+th {
+  background: var(--side);
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent-light);
+  color: var(--accent);
+}
+tr:hover { background: var(--side); }
+hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 2.5em 0;
+}
+p strong:first-child { color: var(--accent); }
+/* 左右两个可折叠侧边栏共用的外观：左侧 #book-toc 是全书目录（所有章节的
+   平级链接，当前章节高亮显示），右侧 #toc 是本章目录（当前页面的 h2/h3
+   小节大纲，由脚本在页面加载时扫描正文自动生成）。两者都默认收起，
+   点击各自角落的按钮滑出，避免常驻挤占正文的 800px 阅读列宽。 */
+.sidebar-toggle {
+  position: fixed;
+  top: 1.2em;
+  z-index: 100;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.5em 0.9em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-family: inherit;
+  box-shadow: 0 2px 5px var(--shadow);
+}
+.sidebar-toggle:hover { background: var(--accent-light); }
+#toc-toggle { right: 1.2em; }
+#book-toc-toggle { left: 1.2em; }
+.sidebar-panel {
+  position: fixed;
+  top: 0;
+  width: 380px;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--side);
+  overflow-y: auto;
+  z-index: 99;
+  padding: 4em 1.5em 2em 1.5em;
+  font-size: 0.92em;
+}
+.sidebar-panel.sidebar-right { right: -400px; box-shadow: -2px 0 10px var(--shadow); transition: right 0.3s ease; }
+.sidebar-panel.sidebar-right.open { right: 0; }
+.sidebar-panel.sidebar-left { left: -400px; box-shadow: 2px 0 10px var(--shadow); transition: left 0.3s ease; }
+.sidebar-panel.sidebar-left.open { left: 0; }
+.sidebar-panel h3 {
+  color: var(--accent);
+  margin-top: 0;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.4em;
+}
+.sidebar-panel ul { list-style: none; padding-left: 0.8em; }
+.sidebar-panel li { margin: 0.35em 0; }
+.sidebar-panel a {
+  border-bottom: none;
+  color: var(--text);
+  font-size: 0.95em;
+}
+.sidebar-panel a:hover { color: var(--accent); }
+.sidebar-panel .toc-h2 { font-weight: 500; margin-top: 0.6em; }
+.sidebar-panel .toc-h3 { padding-left: 1em; color: var(--text-muted); font-size: 0.88em; }
+.sidebar-panel .toc-current {
+  display: block;
+  color: var(--accent);
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .sidebar-toggle .toggle-label { display: none; }
+}
+.pageheader {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  margin-bottom: 2em;
+  text-transform: uppercase;
+}
+/* 顶部导航横幅：锁定在视口顶端，标题居中、上一章在左、下一章在右。
+   每侧两行——第一行是方向标签，第二行是目标章节名（居中、单行省略号截断），
+   这样横幅高度恒定，不会因章节名长短或换行而跳动。 */
+.chapternav-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+  box-shadow: 0 2px 8px var(--shadow);
+  padding: 0.9em 6.2em;
+}
+.chapternav-banner-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1em;
+}
+.chapternav-banner .nav-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  min-width: 0;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  border-bottom: none;
+  text-align: center;
+}
+.chapternav-banner a.nav-side:hover { background: var(--side); border-bottom: none; }
+.chapternav-banner .nav-side-label {
+  font-size: 0.78em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.chapternav-banner .nav-side-name {
+  display: block;
+  max-width: 18em;
+  font-size: 0.92em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapternav-banner .nav-side-prev { justify-self: start; }
+.chapternav-banner .nav-side-next { justify-self: end; }
+.chapternav-banner .nav-placeholder { visibility: hidden; }
+.chapternav-banner .nav-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  justify-self: center;
+  min-width: 0;
+  text-align: center;
+}
+.chapternav-banner .nav-title-book {
+  font-size: 0.78em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  max-width: 26em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapternav-banner .nav-title-chapter {
+  display: block;
+  max-width: 26em;
+  font-size: 1.05em;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+a.nav-title-chapter {
+  color: var(--text);
+  border-bottom: none;
+}
+a.nav-title-chapter:hover { color: var(--link-hover); }
+
+/* 底部导航条：随文排布，不固定，保留原来的单行"上一章 · 目录 · 下一章"样式 */
+.chapternav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+  font-size: 0.9em;
+}
+.chapternav-bottom { margin-top: 3em; padding-top: 1.2em; border-top: 1px solid var(--rule); }
+.chapternav a {
+  border-bottom: none;
+  padding: 0.3em 0.7em;
+  border-radius: 4px;
+  transition: background 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapternav a:hover { background: var(--side); border-bottom: none; }
+.chapternav .nav-prev { flex: 1 1 0; min-width: 0; text-align: left; }
+.chapternav .nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+.chapternav .nav-index {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.chapternav .nav-placeholder { visibility: hidden; }
+@media (max-width: 600px) {
+  .chapternav a { max-width: 40vw; }
+  .chapternav-banner { padding: 0.7em 3.6em; }
+  .chapternav-banner .nav-side-name { max-width: 20vw; font-size: 0.82em; }
+  .chapternav-banner .nav-side-label { font-size: 0.68em; }
+  .chapternav-banner .nav-title-book,
+  .chapternav-banner .nav-title-chapter { max-width: 20vw; font-size: 0.88em; }
+  .chapternav-banner .nav-title-book { font-size: 0.68em; }
+}
+@media print {
+  body { background: white; color: black; font-size: 11pt; }
+  main { max-width: 100%; padding: 0; }
+  .sidebar-toggle, .sidebar-panel, .chapternav, .chapternav-banner { display: none; }
+  h2 { page-break-before: auto; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  pre, blockquote, table { page-break-inside: avoid; }
+  a { color: black; text-decoration: none; border-bottom: none; }
+}
+</style>
+</head>
+<body data-prev-href="__PREV_HREF__" data-next-href="__NEXT_HREF__">
+
+__BOOK_TOC_PANEL__
+
+<button id="toc-toggle" class="sidebar-toggle" onclick="document.getElementById('toc').classList.toggle('open')">☰<span class="toggle-label"> 本章目录</span></button>
+<nav id="toc" class="sidebar-panel sidebar-right">
+<h3>本章目录</h3>
+<div id="toc-content"></div>
+</nav>
+
+<main>
+__NAV_TOP__
+<div class="pageheader">__HEADER__</div>
+__BODY__
+__NAV_BOTTOM__
+</main>
+
+<script>
+(function() {
+  const tocContent = document.getElementById('toc-content');
+  const headings = document.querySelectorAll('main h2, main h3');
+  const ul = document.createElement('ul');
+  headings.forEach((h, i) => {
+    if (!h.id) h.id = 'sec-' + i;
+    const li = document.createElement('li');
+    li.className = 'toc-' + h.tagName.toLowerCase();
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    a.onclick = () => document.getElementById('toc').classList.remove('open');
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  tocContent.appendChild(ul);
+})();
+</script>
+
+<script>
+(function() {
+  // 章节间左右方向键跳转：仅当页面确实带有上一章/下一章链接时生效，
+  // 避免影响输入框内的正常方向键行为或无导航的合并版/目录页。
+  const prevHref = document.body.getAttribute('data-prev-href');
+  const nextHref = document.body.getAttribute('data-next-href');
+  if (!prevHref && !nextHref) return;
+  document.addEventListener('keydown', function(e) {
+    const active = document.activeElement;
+    const tag = active ? active.tagName : '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (active && active.isContentEditable)) return;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+    if (e.key === 'ArrowLeft' && prevHref) { window.location.href = prevHref; }
+    if (e.key === 'ArrowRight' && nextHref) { window.location.href = nextHref; }
+  });
+})();
+</script>
+
+</body>
+</html>
